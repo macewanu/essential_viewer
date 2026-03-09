@@ -2515,9 +2515,7 @@ function hookObserver(){
 											{{#each this.classificationsByReg}}
 											  {{#each this}}
 												<tr>
-												  {{#if @first}}
-													<td rowspan="{{../length}}"><span class="label label-default">{{@../key}}</span></td>
-												  {{/if}}
+												  <td rowspan="{{../length}}">{{#if @first}}<span class="label label-default">{{@../key}}</span>{{/if}}</td>
 												  <td><span class="label label-default">{{classificationName}}</span></td>
 												  <td>	{{#each data_objects}}
 															<li><span class="label label-primary">{{this.name}}</span></li>
