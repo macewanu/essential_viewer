@@ -695,9 +695,9 @@
 									</div>
 								</div>
 								<div class="superflex">
-									{{#if this.programmeName.name}}
+									{{#if this.programmeName}}
 									<h3 class="text-primary"><i class="fa fa-clone right-10"></i><xsl:value-of select="eas:i18n('Parent Programme')"/></h3>
-									<div class="ess-string">{{this.programmeName.name}}</div>
+									<div class="ess-string">{{this.programmeName}}</div>
 
 									{{/if}}
 									<h3 class="text-primary"><i class="fa fa-calendar-o right-10"></i><xsl:value-of select="eas:i18n('Key Dates')"/></h3>
