@@ -849,6 +849,7 @@
 									<div><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></div>
 
 									{{#each this.datarepsimplemented}}
+									{{#if (implementsDataObj this ../../../this)}}
 									<div class="datatype">
 										<span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span>
 									</div>
@@ -859,6 +860,7 @@
 										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
 									</div>
 									<div class="clearfix"></div>
+									{{/if}}
 									{{/each}}
 
 									{{else}}
@@ -910,6 +912,7 @@
 									<div><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></div>
 
 									{{#each this.datarepsimplemented}}
+									{{#if (implementsDataObj this ../../../this)}}
 									<div class="datatype">
 										<span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span>
 									</div>
@@ -920,6 +923,7 @@
 										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
 									</div>
 									<div class="clearfix"></div>
+									{{/if}}
 									{{/each}}
 
 									{{else}}
@@ -1167,7 +1171,39 @@
 				  $('[data-toggle="tooltip"]').tooltip();
 				})
 				
-				
+				function dataRepImplementsDataObj(dataRepImpl, dataObjId) {
+
+					const fdr = DRList.find((dr) => {
+						return dataRepImpl.dataRepid === dr.id;
+					});
+
+					const dob = DOList.data_objects.find((dob) => {
+						const fdodr = dob.dataReps.find((dodr) => {
+							return fdr.id === dodr.id;
+						});
+						return fdodr;
+					});
+					
+					return (dob.id === dataObjId);
+
+				}
+
+				Handlebars.registerHelper('containsDataObj', function(arg1, arg2) {
+
+					let result = false;
+
+					arg1.forEach((dri) => {
+						if (dataRepImplementsDataObj(dri, arg2.id)) result = true;
+					});
+
+					return result;
+				});
+
+				Handlebars.registerHelper('implementsDataObj', function(arg1, arg2) {
+
+					return dataRepImplementsDataObj(arg1, arg2.id);
+
+				});				
 
 				Handlebars.registerHelper('CRUDVal', function(arg1) {
 					if(arg1=='Yes'){
