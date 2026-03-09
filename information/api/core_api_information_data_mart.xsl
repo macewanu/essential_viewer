@@ -45,8 +45,8 @@
   <xsl:variable name="dataCategory" select="/node()/simple_instance[type='Data_Category']"/>
   <xsl:key name="dataCategoryKey" match="$dataCategory" use="name"/>
   <xsl:variable name="actors" select="/node()/simple_instance[type=('Group_Actor')]"/>
-  <xsl:key name="actors" match="/node()/simple_instance[type=('Group_Actor','Individual_Actor')]" use="name"/>
-  <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor')]"/>	
+  <xsl:key name="actors" match="/node()/simple_instance[type=('Group_Actor','Individual_Actor','Job_Position')]" use="name"/>
+  <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor','Job_Position')]"/>	
   <xsl:variable name="dataType" select="/node()/simple_instance[type=('Primitive_Data_Object')] union $dataObjects"/>	
   <xsl:variable name="allActors" select="$actors union $individual"/>	
   <xsl:variable name="classifications" select="/node()/simple_instance[type=('Security_Classification')]"/>
@@ -57,7 +57,7 @@
   <xsl:variable name="role" select="/node()/simple_instance[type=('Group_Business_Role','Individual_Business_Role')]"/>	
   <xsl:key name="actor2RoleKey" match="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]" use="name"/> 
   <xsl:variable name="actor2Role" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/> 
-  <xsl:key name="actors_key" match="/node()/simple_instance[type=('Individual_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+  <xsl:key name="actors_key" match="/node()/simple_instance[type=('Individual_Actor','Job_Position')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
   <xsl:key name="groupActorsName_key" match="/node()/simple_instance[type=('Group_Actor','Individual_Actor')]" use="name"/>
   <xsl:key name="roles_key" match="/node()/simple_instance[type='Individual_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
   <xsl:key name="grpactors_key" match="/node()/simple_instance[type=('Group_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
