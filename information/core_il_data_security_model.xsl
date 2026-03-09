@@ -53,7 +53,7 @@
 
 	<xsl:variable name="allBusinessRoles" select="/node()/simple_instance[type = ('Individual_Business_Role','Group_Business_Role')]"/>
 	<xsl:variable name="dataStakeholderRoles" select="$allBusinessRoles[own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name]"/>
-	<xsl:variable name="dataStakeholderActors" select="/node()/simple_instance[type = ('Individual_Actor', 'Group_Actor')]"/>
+	<xsl:variable name="dataStakeholderActors" select="/node()/simple_instance[type = ('Individual_Actor', 'Group_Actor', 'Job_Position')]"/>
 
 	<xsl:variable name="allSecurityPolicies" select="/node()/simple_instance[type = 'Security_Policy']"/>
 	<xsl:variable name="allSecurityClassifications" select="/node()/simple_instance[type = 'Security_Classification']"/>
