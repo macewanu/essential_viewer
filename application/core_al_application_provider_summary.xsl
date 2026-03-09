@@ -3627,12 +3627,13 @@ function hookObserver(){
 														<div class="appCard2">
 															<xsl:attribute name="irid">{{this.idirep}}</xsl:attribute>
 															<div class="bottom-5"><strong><xsl:value-of select="eas:i18n('Appears in')"/>: </strong><span class="label label-link bg-darkgrey">{{#essRenderInstanceMenuLink this.irInfo}}{{/essRenderInstanceMenuLink}}</span></div>
-															{{#if this.datarepsimplemented}}
+															{{#if (containsDataObj this.datarepsimplemented ../this) }}
 															<span class="dbicon">{{this.category}}</span>
 														
 															<span class="appTableHeader"><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></span><br/>
 															
 															{{#each this.datarepsimplemented}}
+															{{#if (implementsDataObj this ../../this)}}
 															<div class="datatype"><span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span> </div>
 															<div class="datacrud">
 																<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
@@ -3641,6 +3642,7 @@ function hookObserver(){
 																<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
 															</div>
 															<div class="clearfix"/>
+															{{/if}}
 															{{/each}}
 															{{else}}
 															 
@@ -4788,6 +4790,41 @@ var paperScroller = new joint.ui.PaperScroller({
 				 
 					return thisDr.name;
 				});
+
+				function dataRepImplementsDataObj(dataRepImpl, dataObjId) {
+
+					const fdr = DRList.find((dr) => {
+						return dataRepImpl.dataRepid === dr.id;
+					});
+
+					const dob = DOList.data_objects.find((dob) => {
+						const fdodr = dob.dataReps.find((dodr) => {
+							return fdr.id === dodr.id;
+						});
+						return fdodr;
+					});
+					
+					return (dob.id === dataObjId);
+
+				}
+
+				Handlebars.registerHelper('containsDataObj', function(arg1, arg2) {
+
+					let result = false;
+
+					arg1.forEach((dri) => {
+						if (dataRepImplementsDataObj(dri, arg2.dataObjectId)) result = true;
+					});
+
+					return result;
+				});
+
+				Handlebars.registerHelper('implementsDataObj', function(arg1, arg2) {
+
+					return dataRepImplementsDataObj(arg1, arg2.dataObjectId);
+
+				});
+
 
 				Handlebars.registerHelper('styler', function(arg1) {
 
