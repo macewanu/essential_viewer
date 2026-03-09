@@ -211,7 +211,7 @@
 								<script>
 									$(document).ready(function(){								
 									var table = $('#dt_dataObjects').DataTable({
-										scrollY: "350px",
+										scrollY: $(window).innerHeight()-400,
 										scrollCollapse: true,
 										scrollX: true,
 										sScrollXInner: "<xsl:value-of select="140 + (140 * count($inScopeDataObjects))"/>px", <!--we need to calculate this value using the formula 140 +(140 x number of data subjects)//-->
