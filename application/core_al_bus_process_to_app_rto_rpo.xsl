@@ -1137,7 +1137,7 @@
 					if(thisrtrpEnu){
 					 
 					let thisRpo = RTORPOEnums.find((f)=>{
-						return thisrtrpEnu.linkedRPO[0] == f.id;
+						return thisrtrpEnu.linkedRTO[0] == f.id;
 					})
 					
 					let thisRto = RTORPOEnums.find((f)=>{
