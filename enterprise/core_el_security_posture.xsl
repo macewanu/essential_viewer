@@ -626,7 +626,7 @@
 														prodsA[ 'id'] = productAffected[0].id;
 														prodsA[ 'prdid'] = productAffected[0].vendorId;
 														prodsA[ 'vendor'] = productAffected[0].vendor;
-														prodsA[ 'product'] = productAffected[0].product;
+														prodsA[ 'product'] = productAffected[0].productName;
 														prodsA[ 'version'] = productAffected[0].version;
 														prodsA[ 'cve_ID'] = d.cve.id;
 														prodsA[ 'severity'] = d.cve.impact?.baseSeverity;
@@ -739,18 +739,36 @@
 					};
 					
 					function uniq(a) {
-						var seen = {
-						};
-						return a.filter(function (item) {
-							return seen.hasOwnProperty(item.cve_ID) ? false: (seen[item.cve_ID] = true);
+						const aa = [];
+						a.forEach(function (item) {
+							let idx = aa.findIndex((itm) =&gt; itm.cve_ID === item.cve_ID);
+							let itema;
+							if (idx &gt; -1) itema = aa[idx];
+							if (!itema) {
+								aa.push(item);
+							} else {
+								if (item.versionEndEx?.localeCompare(itema.versionEndEx) &gt; -1) {
+									aa[idx] = item;
+								}
+							}
 						});
+						return aa;
 					};
 					function uniqVendor(a) {
-						var seen = {
-						};
-						return a.filter(function (item) {
-							return seen.hasOwnProperty(item.id + item.version) ? false: (seen[item.id + item.version] = true);
+						const aa = [];
+						a.forEach(function (item) {
+							let idx = aa.findIndex((itm) =&gt; itm.id === item.id);
+							let itema;
+							if (idx &gt; -1) itema = aa[idx];
+							if (!itema) {
+								aa.push(item);
+							} else {
+								if (item.version?.localeCompare(itema.version) &gt; -1) {
+									aa[idx] = item;
+								}
+							}
 						});
+						return aa;
 					};
 					
 					function uniqVendorNVD(a) {
