@@ -507,27 +507,29 @@
 						var inScopeProds =[];
 						var inScopeCVEProds =[];
 						
-						cveJSON.CVE_Items.forEach(function (d, i) {
+						cveJSON.vulnerabilities.forEach(function (d, i) {
 							
-							cveJSON.CVE_Items[i].configurations.nodes.filter(function (e) {
-								if (e.cpe_match) {
-									e.cpe_match.forEach(function (f) {
-										cpematch = f.cpe23Uri;
-										vendorArray = f.cpe23Uri.split(':');
-										vendorName = vendorArray[3];
-										vendorProduct = vendorArray[4];
-										productVersion = vendorArray[5];
-										
-										filteredlist.push({
-											"cve": d.cve.CVE_data_meta.ID,
-											"vendorArray": vendorArray,
-											"vendorName": vendorName,
-											"vendorProduct": vendorProduct,
-											"productVersion": productVersion
+							d.cve.configurations?.forEach(function (cnf) {
+								cnf.nodes?.forEach(function (e) {
+									if (e.cpeMatch) {
+										e.cpeMatch.forEach(function (f) {
+											cpematch = f.criteria;
+											vendorArray = f.criteria.split(':');
+											vendorName = vendorArray[3];
+											vendorProduct = vendorArray[4];
+											productVersion = vendorArray[5];
+											
+											filteredlist.push({
+												"cve": d.cve.id,
+												"vendorArray": vendorArray,
+												"vendorName": vendorName,
+												"vendorProduct": vendorProduct,
+												"productVersion": productVersion
+											});
 										});
-									});
-								};
-							});
+									};
+								});
+						  });
 						});
 						var uniqueNVD = uniqVendorNVD(filteredlist);
 						
@@ -546,8 +548,8 @@
 						});
 						
 						
-						var filteredCVEList = cveJSON.CVE_Items.forEach(function (items) {
-							var thisID = items.cve.CVE_data_meta.ID;
+						var filteredCVEList = cveJSON.vulnerabilities.forEach(function (items) {
+							var thisID = items.cve.id;
 							
 							var upCVE = inScopeCVEProds.filter(function (f) {
 								if (f.cve === thisID) {
@@ -563,104 +565,112 @@
 							var fulllist =[];
 							
 							
-							d.configurations.nodes.filter(function (e) {
-								if (e.cpe_match) {
-									e.cpe_match.forEach(function (f) {
-										cpematch = f.cpe23Uri;
-										vendorArray = f.cpe23Uri.split(':');
-										vendorName = vendorArray[3];
-										vendorProduct = vendorArray[4];
-										productVersion = vendorArray[5];
-										
-										nvdlist.push({
-											"vendor": vendorName, "vendorProduct": vendorProduct.replace(/_/g, ' '), "productVersion": productVersion
-										});
-										
-										
-										
-										if (f.versionEndIncluding) {
-											versionEndInc = f.versionEndIncluding;
-										} else {
-											versionEndInc = '';
-										};
-										
-										if (f.versionEndExcluding) {
-											versionEndEx = f.versionEndExcluding;
-										} else {
-											versionEndEx = '';
-										};
-										
-										var prods = inScopeProds.filter(function (e) {
-											return e.vendor.toUpperCase() === vendorName.toUpperCase();
-										});
-										
-										if (prods[0]) {
-											opts.push(prods[0]);
-										};
-										
-										if (prods.length &gt; 0) {
+							d.cve.configurations?.forEach(function (cnf) {
+								cnf.nodes?.filter(function (e) {
+									if (e.cpeMatch) {
+										e.cpeMatch.forEach(function (f) {
+											cpematch = f.criteria;
+											vendorArray = f.criteria.split(':');
+											vendorName = vendorArray[3];
+											vendorProduct = vendorArray[4];
+											productVersion = vendorArray[5];
 											
-											productAffected =[];
-											prods.forEach(function (e, j) {
-												fulllist.push(e);
-												if (e.product.toUpperCase().replace(' ', '') === vendorProduct.toUpperCase().replace('_', '')) {
-													
-													
-													if (productVersion === e.version) {
-														productAffected.push(e)
-													};
-												};
-												
-												if (productAffected &gt;[]) {
-													
-													prodsA =[];
-													prodsA[ 'id'] = productAffected[0].id;
-													prodsA[ 'prdid'] = productAffected[0].vendorId;
-													prodsA[ 'vendor'] = productAffected[0].vendor;
-													prodsA[ 'product'] = productAffected[0].product;
-													prodsA[ 'version'] = productAffected[0].version;
-													prodsA[ 'cve_ID'] = d.cve.CVE_data_meta.ID;
-													prodsA[ 'severity'] = d.impact.baseMetricV3.cvssV3.baseSeverity;
-													prodsA[ 'CIAC'] = d.impact.baseMetricV3.cvssV3.confidentialityImpact;
-													prodsA[ 'CIAI'] = d.impact.baseMetricV3.cvssV3.integrityImpact;
-													prodsA[ 'CIAA'] = d.impact.baseMetricV3.cvssV3.availabilityImpact;
-													prodsA[ 'versionEndIn'] = versionEndInc;
-													prodsA[ 'versionEndEx'] = versionEndEx;
-													prodsA[ 'description'] = d.cve.description.description_data[0].value;
-													
-													prodsA[ 'appCount'] = productAffected[0].appimpacts.length
-													prodsA[ 'busCount'] = productAffected[0].busimpacts.length
-													prodsA[ 'apps'] = productAffected[0].appimpacts;
-													prodsA[ 'bus'] = productAffected[0].busimpacts;
-													prodlist.push(prodsA);
-												};
-												
-												if (fulllist &gt;[]) {
-													
-													prodsAll =[];
-													prodsAll[ 'cpematch'] = cpematch;
-													prodsAll[ 'id'] = fulllist[0].vendorId;
-													prodsAll[ 'prdid'] = fulllist[0].vendorId;
-													prodsAll[ 'vendor'] = fulllist[0].vendor;
-													prodsAll[ 'product'] = vendorProduct;
-													prodsAll[ 'version'] = productVersion;
-													prodsAll[ 'cve_ID'] = d.cve.CVE_data_meta.ID;
-													prodsAll[ 'severity'] = d.impact.baseMetricV3.cvssV3.baseSeverity;
-													prodsAll[ 'CIAC'] = d.impact.baseMetricV3.cvssV3.confidentialityImpact;
-													prodsAll[ 'CIAI'] = d.impact.baseMetricV3.cvssV3.integrityImpact;
-													prodsAll[ 'CIAA'] = d.impact.baseMetricV3.cvssV3.availabilityImpact;
-													prodsAll[ 'versionEndIn'] = versionEndInc;
-													prodsAll[ 'versionEndEx'] = versionEndEx;
-													prodsAll[ 'allList'] = 'true';
-													prodsAll[ 'description'] = d.cve.description.description_data[0].value;
-													
-													allprodlist.push(prodsAll);
-												};
+											nvdlist.push({
+												"vendor": vendorName, "vendorProduct": vendorProduct.replace(/_/g, ' '), "productVersion": productVersion
 											});
-										};
-									});
-								};
-							});
+											
+											
+											
+											if (f.versionEndIncluding) {
+												versionEndInc = f.versionEndIncluding;
+											} else {
+												versionEndInc = '';
+											};
+											
+											if (f.versionEndExcluding) {
+												versionEndEx = f.versionEndExcluding;
+											} else {
+												versionEndEx = '';
+											};
+											
+											var prods = inScopeProds.filter(function (e) {
+												return e.vendor.toUpperCase() === vendorName.toUpperCase();
+											});
+											
+											if (prods[0]) {
+												opts.push(prods[0]);
+											};
+											
+											if (prods.length &gt; 0) {
+												
+												productAffected =[];
+												prods.forEach(function (e, j) {
+													fulllist.push(e);
+													if (e.productName.toUpperCase().replace(' ', '') === vendorProduct.toUpperCase().replace('_', '')) {
+														
+														
+														if (productVersion.localeCompare(e.version) &gt; -1) {
+															productAffected.push(e)
+														};
+													};
+
+													if (d.cve.metrics.cvssMetricV31?.length &gt; 0) {
+														d.cve.impact = d.cve.metrics.cvssMetricV31[0].cvssData;
+													}
+
+													d.cve.description = d.cve.descriptions?.find((desc) =&gt; desc.lang === 'en');
+													
+													if (productAffected &gt;[]) {
+														
+														prodsA =[];
+														prodsA[ 'id'] = productAffected[0].id;
+														prodsA[ 'prdid'] = productAffected[0].vendorId;
+														prodsA[ 'vendor'] = productAffected[0].vendor;
+														prodsA[ 'product'] = productAffected[0].product;
+														prodsA[ 'version'] = productAffected[0].version;
+														prodsA[ 'cve_ID'] = d.cve.id;
+														prodsA[ 'severity'] = d.cve.impact?.baseSeverity;
+														prodsA[ 'CIAC'] = d.cve.impact?.confidentialityImpact;
+														prodsA[ 'CIAI'] = d.cve.impact?.integrityImpact;
+														prodsA[ 'CIAA'] = d.cve.impact?.availabilityImpact;
+														prodsA[ 'versionEndIn'] = versionEndInc;
+														prodsA[ 'versionEndEx'] = versionEndEx;
+														prodsA[ 'description'] = d.cve.description?.value;
+														
+														prodsA[ 'appCount'] = productAffected[0].appimpacts.length
+														prodsA[ 'busCount'] = productAffected[0].busimpacts.length
+														prodsA[ 'apps'] = productAffected[0].appimpacts;
+														prodsA[ 'bus'] = productAffected[0].busimpacts;
+														prodlist.push(prodsA);
+													};
+													
+													if (fulllist &gt;[]) {
+														
+														prodsAll =[];
+														prodsAll[ 'cpematch'] = cpematch;
+														prodsAll[ 'id'] = fulllist[0].vendorId;
+														prodsAll[ 'prdid'] = fulllist[0].vendorId;
+														prodsAll[ 'vendor'] = fulllist[0].vendor;
+														prodsAll[ 'product'] = vendorProduct;
+														prodsAll[ 'version'] = productVersion;
+														prodsAll[ 'cve_ID'] = d.cve.id;
+														prodsAll[ 'severity'] = d.cve.impact?.baseSeverity;
+														prodsAll[ 'CIAC'] = d.cve.impact?.confidentialityImpact;
+														prodsAll[ 'CIAI'] = d.cve.impact?.integrityImpact;
+														prodsAll[ 'CIAA'] = d.cve.impact?.availabilityImpact;
+														prodsAll[ 'versionEndIn'] = versionEndInc;
+														prodsAll[ 'versionEndEx'] = versionEndEx;
+														prodsAll[ 'allList'] = 'true';
+														prodsAll[ 'description'] = d.cve.description?.value;
+														
+														allprodlist.push(prodsAll);
+													};
+												});
+											};
+										});
+									};
+								});
+								});
 						});
 						
 						
